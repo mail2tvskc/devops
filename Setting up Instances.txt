@@ -1,0 +1,54 @@
+gcloud compute instances create example-instance --image-family centos-7 --image-project centos-cloud
+
+
+*** on node1
+ssh-copy-id 172.31.43.47
+ssh-copy-id 172.31.36.219
+ssh-copy-id 172.31.34.73
+
+*** on node2
+ssh-copy-id 172.31.43.47
+ssh-copy-id 172.31.32.229
+ssh-copy-id 172.31.34.73
+
+*** on node3
+ssh-copy-id 172.31.43.47
+ssh-copy-id 172.31.32.229
+ssh-copy-id 172.31.36.219
+
+*** on master
+ssh-copy-id 172.31.32.229
+ssh-copy-id 172.31.36.219
+ssh-copy-id 172.31.34.73
+
+sudo vi /etc/ansible/hosts
+[local]
+localhost
+[apacheweb]
+172.31.32.229
+172.31.36.219
+[appserver]
+172.31.34.73
+
+
+ansible all --list-hosts
+
+ansible apacheweb -m ping
+ansible appserver -m ping
+
+***on node3  
+sudo systemctl stop sshd 
+
+**** on master
+ansible appserver -m ping
+
+*** Connection should be failed
+
+**** on node3
+sudo systemctl start sshd
+
+**** on master
+ansible appserver -m ping
+
+
+
